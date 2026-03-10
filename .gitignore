@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────
+# JAVA / MAVEN — Never commit compiled code
+# ─────────────────────────────────────────
+target/
+*.jar
+*.war
+*.class
+*.ear
+
+# ─────────────────────────────────────────
+# VS CODE — Personal editor settings
+# ─────────────────────────────────────────
+.vscode/settings.json
+.vscode/launch.json
+
+# ─────────────────────────────────────────
+# INTELLIJ / ECLIPSE — Other IDE files
+# ─────────────────────────────────────────
+.idea/
+*.iml
+*.project
+*.classpath
+.eclipse/
+
+# ─────────────────────────────────────────
+# SECRETS — NEVER commit these ever
+# ─────────────────────────────────────────
+.env
+*.pem
+*.key
+*.pfx
+application-prod.properties
+application-local.properties
+secrets.properties
+
+# ─────────────────────────────────────────
+# TERRAFORM — Added in Phase 2 (Day 21)
+# ─────────────────────────────────────────
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+override.tf
+
+# ─────────────────────────────────────────
+# OS FILES — Auto-generated junk files
+# ─────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
