@@ -17,16 +17,20 @@ public class OrderController {
 
     // POST /order/place — Place a new order
     // Body: { "userId": "user1", "productIds": [1,2], "totalAmount": 95000 }
-    @PostMapping("/place")
-    public ResponseEntity<Order> placeOrder(@RequestBody Map<String, Object> request) {
-        String userId = (String) request.get("userId");
-        List<Integer> rawIds = (List<Integer>) request.get("productIds");
-        List<Long> productIds = rawIds.stream().map(Long::valueOf).toList();
-        Double totalAmount = Double.valueOf(request.get("totalAmount").toString());
-
-        Order order = orderService.placeOrder(userId, productIds, totalAmount);
-        return ResponseEntity.ok(order);
-    }
+@PostMapping("/place")
+@SuppressWarnings("unchecked")        // ← ADD THIS LINE
+public ResponseEntity<Order> placeOrder(
+        @RequestBody Map<String, Object> request) {
+    String userId = (String) request.get("userId");
+    List<Integer> rawIds = (List<Integer>) request.get("productIds");
+    List<Long> productIds = rawIds.stream()
+        .map(Long::valueOf).toList();
+    Double totalAmount = Double.valueOf(
+        request.get("totalAmount").toString());
+    Order order = orderService.placeOrder(
+        userId, productIds, totalAmount);
+    return ResponseEntity.ok(order);
+}
 
     // GET /order/{id} — Get order by ID
     @GetMapping("/{id}")
