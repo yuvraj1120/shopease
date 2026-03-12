@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Day 2 — Git Branching & PRs Cheatsheet</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap');
+:root {
+  --bg:#0d1117;--card:#161b22;--border:#30363d;
+  --green:#3fb950;--blue:#58a6ff;--purple:#bc8cff;
+  --orange:#ffa657;--yellow:#e3b341;--red:#f85149;
+  --text:#e6edf3;--muted:#8b949e;--code:#1c2128;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1a1a2e;font-family:'Syne',sans-serif;padding:30px 20px;color:var(--text);}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;justify-content:center;margin-bottom:28px;flex-wrap:wrap;}
+.btn{border:none;border-radius:10px;padding:11px 22px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;gap:7px;transition:transform 0.15s,box-shadow 0.15s;color:#fff;}
+.btn:hover{transform:translateY(-2px);}
+.btn.g{background:linear-gradient(135deg,#3fb950,#2ea043);box-shadow:0 4px 15px rgba(63,185,80,0.3);}
+.btn.b{background:linear-gradient(135deg,#58a6ff,#1f6feb);box-shadow:0 4px 15px rgba(88,166,255,0.3);}
+.btn.p{background:linear-gradient(135deg,#bc8cff,#8957e5);box-shadow:0 4px 15px rgba(188,140,255,0.3);}
+.btn.o{background:linear-gradient(135deg,#ffa657,#e85d04);box-shadow:0 4px 15px rgba(255,166,87,0.3);}
+
+/* PAGE */
+.page{width:1200px;margin:0 auto 36px auto;background:var(--bg);border-radius:16px;padding:38px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.pt{font-size:1.35rem;font-weight:800;background:linear-gradient(90deg,var(--green),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.pb{font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:20px;padding:4px 12px;}
+.pf{margin-top:22px;padding-top:12px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:0.63rem;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+.pnum{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-weight:700;}
+
+/* SECTION */
+.sec{margin-bottom:24px;}
+.st{font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:8px;}
+.st::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* CODE */
+.cb{background:var(--code);border-left:3px solid var(--green);border-radius:0 6px 6px 0;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;line-height:1.8;color:var(--green);}
+.cb .cm{color:var(--muted);}
+.cb .hl{color:var(--yellow);}
+.cb .out{color:var(--blue);}
+
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 28px;gap:0;overflow-x:auto;}
+.pn{display:flex;flex-direction:column;align-items:center;}
+.pb2{border:2px solid;border-radius:12px;padding:13px 16px;text-align:center;font-size:0.72rem;font-family:'JetBrains Mono',monospace;min-width:125px;background:var(--code);}
+.pb2 .ico{font-size:1.5rem;display:block;margin-bottom:5px;}
+.pb2 .lbl{font-weight:700;font-size:0.7rem;}
+.pb2 .sub{color:var(--muted);font-size:0.6rem;margin-top:3px;}
+.pa{display:flex;flex-direction:column;align-items:center;min-width:75px;padding:0 4px;}
+.pa .pl{display:flex;align-items:center;width:100%;}
+.pa .ln{flex:1;height:2px;background:var(--border);}
+.pa .ah{font-size:0.95rem;color:var(--green);}
+.pa .cmd{font-size:0.57rem;color:var(--green);font-family:'JetBrains Mono',monospace;margin-top:4px;white-space:nowrap;}
+.pa .cmd.r{color:var(--purple);}
+
+/* GRID 2 */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px;}
+.card-title{font-weight:700;font-size:0.8rem;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.card-desc{color:var(--muted);font-size:0.68rem;line-height:1.5;margin-bottom:8px;}
+
+/* STEP CARDS */
+.sc{display:flex;gap:11px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px;}
+.sn{min-width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.78rem;flex-shrink:0;}
+.sb .st2{font-weight:700;font-size:0.8rem;margin-bottom:5px;}
+.sb .sd{color:var(--muted);font-size:0.68rem;line-height:1.45;margin-bottom:7px;}
+
+/* BRANCH DIAGRAM */
+.bv{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;font-family:'JetBrains Mono',monospace;font-size:0.73rem;}
+.br2{display:flex;align-items:center;margin-bottom:4px;white-space:nowrap;}
+.bl{min-width:125px;font-size:0.67rem;font-weight:700;padding-right:8px;}
+.dot{width:26px;height:26px;border-radius:50%;border:2px solid;display:inline-flex;align-items:center;justify-content:center;font-size:0.54rem;font-weight:700;flex-shrink:0;}
+.hln{height:2px;width:34px;display:inline-block;flex-shrink:0;}
+.bt{font-size:0.58rem;color:var(--muted);margin-left:10px;}
+.bleg{display:flex;gap:18px;margin-top:11px;font-size:0.62rem;flex-wrap:wrap;padding-top:11px;border-top:1px solid var(--border);}
+
+/* MERGE CARDS */
+.mc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px;}
+.mt{font-weight:800;font-size:0.77rem;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.md{color:var(--muted);font-size:0.65rem;line-height:1.5;margin-bottom:9px;}
+.mdiag{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--blue);background:var(--code);border-radius:6px;padding:9px 10px;line-height:1.8;white-space:pre;}
+
+/* BADGES */
+.badge{font-size:0.57rem;padding:2px 8px;border-radius:20px;font-weight:700;}
+.bg2{background:rgba(63,185,80,0.15);color:var(--green);}
+.bb2{background:rgba(88,166,255,0.15);color:var(--blue);}
+.br3{background:rgba(248,81,73,0.15);color:var(--red);}
+
+/* QA CARDS */
+.qa{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.qa-q{font-weight:700;font-size:0.75rem;margin-bottom:7px;display:flex;gap:8px;}
+.qa-q .qnum{min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;flex-shrink:0;}
+.qa-a{font-size:0.68rem;color:var(--muted);line-height:1.55;padding-left:30px;}
+.qa-a .key{color:var(--green);font-family:'JetBrains Mono',monospace;font-size:0.65rem;}
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="btn g" onclick="dl('page1','day02-page1-concepts.png')">⬇ Page 1 — Concepts + Branch Diagram</button>
+  <button class="btn b" onclick="dl('page2','day02-page2-commands.png')">⬇ Page 2 — Commands + PR + Merge</button>
+  <button class="btn p" onclick="dl('page3','day02-page3-interview.png')">⬇ Page 3 — Interview Q&A</button>
+  <button class="btn o" onclick="dlAll()">⬇ Download All 3 Pages</button>
+</div>
+
+<!-- ═══════════════════════════════════ PAGE 1 ═══════════════════════════════════ -->
+<div class="page" id="page1">
+  <div class="ph">
+    <div class="pt">🌿 Day 2 — Git Branching & Pull Requests · Page 1 of 3</div>
+    <div class="pb">Phase 1: Foundations · ShopEase · #CloudAutonomics · yuvraj1120</div>
+  </div>
+
+  <!-- 4 ZONES -->
+  <div class="sec">
+    <div class="st">📦 The 4 Git Zones — How Code Travels</div>
+    <div class="pipeline">
+      <div class="pn"><div class="pb2" style="border-color:var(--yellow)"><span class="ico">📁</span><span class="lbl" style="color:var(--yellow)">Working Dir</span><span class="sub">Files you edit<br>in VS Code</span></div></div>
+      <div class="pa"><div class="pl"><div class="ln"></div><div class="ah">▶</div></div><div class="cmd">git add .</div></div>
+      <div class="pn"><div class="pb2" style="border-color:var(--blue)"><span class="ico">📋</span><span class="lbl" style="color:var(--blue)">Staging Area</span><span class="sub">Ready to<br>be committed</span></div></div>
+      <div class="pa"><div class="pl"><div class="ln"></div><div class="ah">▶</div></div><div class="cmd">git commit</div></div>
+      <div class="pn"><div class="pb2" style="border-color:var(--green)"><span class="ico">💾</span><span class="lbl" style="color:var(--green)">Local Repo</span><span class="sub">Saved in<br>.git folder</span></div></div>
+      <div class="pa"><div class="pl"><div class="ln"></div><div class="ah">▶</div></div><div class="cmd">git push</div></div>
+      <div class="pn"><div class="pb2" style="border-color:var(--purple)"><span class="ico">☁️</span><span class="lbl" style="color:var(--purple)">GitHub Remote</span><span class="sub">Online at<br>github.com</span></div></div>
+      <div class="pa"><div class="pl"><div class="ln"></div><div class="ah" style="color:var(--purple)">◀</div></div><div class="cmd r">git pull</div></div>
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="sec">
+    <div class="st">💡 4 Key Concepts of Day 2</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">🌿 Branch</div>
+        <div class="card-desc">A parallel copy of your code. Work on it safely — main stays untouched. Like photocopying a doc before editing.</div>
+        <div class="cb"><span class="cm"># create + switch in one command</span><br>git checkout -b <span class="hl">feature/name</span><br><span class="out">Switched to new branch 'feature/name'</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔀 Pull Request (PR)</div>
+        <div class="card-desc">Formal request to merge your branch into main. Opens review discussion. No professional team merges without a PR.</div>
+        <div class="cb"><span class="cm"># after push → go to GitHub</span><br><span class="out">🟡 "Compare & pull request"</span><br><span class="cm">→ fill title + desc → Create PR</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔀 Merge Strategies</div>
+        <div class="card-desc">3 ways Git can combine branches: Merge (preserves history), Squash (1 clean commit), Rebase (linear, dangerous on shared).</div>
+        <div class="cb"><span class="cm"># on GitHub PR page choose:</span><br>Merge → keeps all commits<br>Squash → 1 commit on main<br>Rebase → linear (use with care)</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔐 Branch Protection</div>
+        <div class="card-desc">GitHub rules that PREVENT direct pushes to main. Forces PRs. Blocks force-push. Every real company has this.</div>
+        <div class="cb"><span class="cm"># GitHub → Settings → Rules</span><br>→ New ruleset → protect-main<br>→ Require PR + Block force push<br><span class="out">Status: Active ✓</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BRANCH VISUAL -->
+  <div class="sec">
+    <div class="st">🌿 Branch Diagram — What Happens Under the Hood</div>
+    <div class="bv">
+      <div style="font-size:0.63rem;color:var(--muted);margin-bottom:14px">Each circle = one commit. You branch off main, do your work, then merge back via PR.</div>
+      <!-- main -->
+      <div class="br2">
+        <span class="bl" style="color:var(--green)">main</span>
+        <div class="dot" style="border-color:var(--green);color:var(--green);background:rgba(63,185,80,0.1)">C1</div>
+        <div class="hln" style="background:var(--green)"></div>
+        <div class="dot" style="border-color:var(--green);color:var(--green);background:rgba(63,185,80,0.1)">C2</div>
+        <div class="hln" style="background:rgba(63,185,80,0.25)"></div>
+        <div style="width:55px;height:2px;background:rgba(63,185,80,0.12);display:inline-block;position:relative"><span style="position:absolute;top:-13px;left:50%;transform:translateX(-50%);font-size:0.52rem;color:var(--muted);white-space:nowrap">PR open...</span></div>
+        <div class="hln" style="background:rgba(63,185,80,0.25)"></div>
+        <div class="dot" style="border-color:var(--purple);color:var(--purple);background:rgba(188,140,255,0.1);border-style:dashed">M</div>
+        <div class="hln" style="background:var(--green)"></div>
+        <div class="dot" style="border-color:var(--green);color:var(--green);background:rgba(63,185,80,0.1)">C3</div>
+        <span class="bt">← main continues after merge</span>
+      </div>
+      <!-- fork -->
+      <div style="display:flex;margin-left:125px"><div style="width:60px"></div><div style="width:60px;border-left:2px solid var(--blue);border-bottom:2px solid var(--blue);height:16px;border-radius:0 0 0 6px;margin-left:13px"></div></div>
+      <!-- feature -->
+      <div class="br2" style="margin-top:0">
+        <span class="bl" style="color:var(--blue)">feature/branch</span>
+        <div style="width:78px"></div>
+        <div class="dot" style="border-color:var(--blue);color:var(--blue);background:rgba(88,166,255,0.1)">F1</div>
+        <div class="hln" style="background:var(--blue)"></div>
+        <div class="dot" style="border-color:var(--blue);color:var(--blue);background:rgba(88,166,255,0.1)">F2</div>
+        <div class="hln" style="background:var(--blue)"></div>
+        <div class="dot" style="border-color:var(--blue);color:var(--blue);background:rgba(88,166,255,0.1)">F3</div>
+        <span class="bt">← your commits → PR opened → merged as M</span>
+      </div>
+      <div class="bleg">
+        <span><span style="color:var(--green)">●</span> main commits</span>
+        <span><span style="color:var(--blue)">●</span> your feature commits</span>
+        <span><span style="color:var(--purple)">◉</span> merge commit M (PR merged)</span>
+        <span style="color:var(--muted)">Branch off C2 → do F1,F2,F3 → PR → merge → M on main</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf"><span>Day 2 — Git Branching & PRs · ShopEase DevOps · #CloudAutonomics · yuvraj1120</span><span class="pnum">Page 1 / 3</span></div>
+</div>
+
+
+<!-- ═══════════════════════════════════ PAGE 2 ═══════════════════════════════════ -->
+<div class="page" id="page2">
+  <div class="ph">
+    <div class="pt">⚡ Day 2 — Commands + PR Flow + Merge · Page 2 of 3</div>
+    <div class="pb">Phase 1: Foundations · ShopEase · #CloudAutonomics · yuvraj1120</div>
+  </div>
+
+  <!-- ALL COMMANDS TODAY -->
+  <div class="sec">
+    <div class="st">⚡ All Commands Learned Today</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:0.65rem;font-weight:700;color:var(--green);margin-bottom:7px;text-transform:uppercase">Branch Commands</div>
+        <div class="cb">
+          <span class="cm"># create + switch to new branch</span><br>
+          git checkout -b <span class="hl">feature/name</span><br><br>
+          <span class="cm"># switch to existing branch</span><br>
+          git checkout main<br><br>
+          <span class="cm"># list all branches (* = current)</span><br>
+          git branch<br><br>
+          <span class="cm"># list remote branches</span><br>
+          git branch -r<br><br>
+          <span class="cm"># delete branch (after merge)</span><br>
+          git branch -d <span class="hl">feature/name</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.65rem;font-weight:700;color:var(--blue);margin-bottom:7px;text-transform:uppercase">Push + Sync Commands</div>
+        <div class="cb">
+          <span class="cm"># push feature branch to GitHub</span><br>
+          git push origin <span class="hl">feature/name</span><br><br>
+          <span class="cm"># pull merged main back locally</span><br>
+          git pull origin main<br><br>
+          <span class="cm"># check what changed</span><br>
+          git status<br><br>
+          <span class="cm"># see commit history</span><br>
+          git log --oneline --graph -5<br><br>
+          <span class="cm"># save unfinished work temporarily</span><br>
+          git stash &nbsp;&nbsp;/&nbsp;&nbsp; git stash pop
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PR FLOW -->
+  <div class="sec">
+    <div class="st">🔀 Pull Request Flow — GitHub Step by Step</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(63,185,80,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">☁️</div>
+        <div><div style="font-weight:700;font-size:0.8rem">1. Push feature branch to GitHub</div><div style="color:var(--muted);font-size:0.67rem;font-family:'JetBrains Mono',monospace;margin-top:2px">git push origin feature/your-branch-name</div></div>
+        <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:rgba(63,185,80,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700">1</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(227,179,65,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🟡</div>
+        <div><div style="font-weight:700;font-size:0.8rem">2. Yellow banner appears on GitHub</div><div style="color:var(--muted);font-size:0.67rem;font-family:'JetBrains Mono',monospace;margin-top:2px">github.com/yuvraj1120/shopease → "Compare & pull request" button</div></div>
+        <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:rgba(227,179,65,0.15);color:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700">2</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(88,166,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">📝</div>
+        <div><div style="font-weight:700;font-size:0.8rem">3. Fill Title + Description → Create pull request</div><div style="color:var(--muted);font-size:0.67rem;font-family:'JetBrains Mono',monospace;margin-top:2px">base: main ← compare: feature/branch · Explain what + why</div></div>
+        <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:rgba(88,166,255,0.15);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700">3</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(88,166,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🔍</div>
+        <div><div style="font-weight:700;font-size:0.8rem">4. Review "Files changed" tab — see the diff</div><div style="color:var(--muted);font-size:0.67rem;font-family:'JetBrains Mono',monospace;margin-top:2px">Green = added lines · Red = removed lines · Add review comments</div></div>
+        <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:rgba(88,166,255,0.15);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700">4</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(63,185,80,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">✅</div>
+        <div><div style="font-weight:700;font-size:0.8rem">5. Merge pull request → Confirm merge</div><div style="color:var(--muted);font-size:0.67rem;font-family:'JetBrains Mono',monospace;margin-top:2px">🟣 "Pull request successfully merged" — badge turns purple</div></div>
+        <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:rgba(63,185,80,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700">5</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:13px 18px;">
+        <div style="width:36px;height:36px;border-radius:8px;background:rgba(248,81,73,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🗑️</div>
+        <div><div style="font-weight:700;font-size:0.8rem">6. Delete branch on GitHub + locally</div><div style="color:var(--muted);font-size:0.67rem;font-family:'JetBrains Mono',monospace;margin-top:2px">GitHub: "Delete branch" button · Local: git branch -d feature/name</div></div>
+        <div style="margin-left:auto;width:22px;height:22px;border-radius:50%;background:rgba(248,81,73,0.15);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700">6</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MERGE STRATEGIES -->
+  <div class="sec">
+    <div class="st">🔀 3 Merge Strategies — Know the Difference</div>
+    <div class="g3">
+      <div class="mc">
+        <div class="mt">🔀 Merge Commit <span class="badge bg2">✅ Use this</span></div>
+        <div class="md">Combines branches + creates merge commit M. Full history visible. Default on GitHub.</div>
+        <div class="mdiag">main: C1─C2──────M
+         \      /
+feat:     F1─F2─F3</div>
+      </div>
+      <div class="mc">
+        <div class="mt">🗜️ Squash Merge <span class="badge bb2">Cleanup</span></div>
+        <div class="md">F1+F2+F3 become ONE commit on main. Good for messy "oops", "fix" commits.</div>
+        <div class="mdiag">main: C1─C2─[F1+F2+F3]
+          ↑
+    1 clean commit
+    no branch visible</div>
+      </div>
+      <div class="mc">
+        <div class="mt">♻️ Rebase <span class="badge br3">❌ Shared</span></div>
+        <div class="md">Replays commits on top of main. Linear history. NEVER on shared branches.</div>
+        <div class="mdiag">main: C1─C2─F1'─F2'─F3'
+          ↑
+   linear, no merge commit
+   rewrites commit hashes!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- .GITIGNORE TODAY -->
+  <div class="sec" style="margin-bottom:0">
+    <div class="st">🔐 .gitignore — What We Added Today (Security Critical)</div>
+    <div class="g2">
+      <div class="cb" style="border-color:var(--red)">
+        <span class="cm"># Java/Maven — never commit build output</span><br>
+        target/ &nbsp; *.class &nbsp; *.jar &nbsp; *.war<br><br>
+        <span class="cm"># Spring Boot secrets</span><br>
+        application-prod.properties<br>
+        *.env &nbsp; .env<br><br>
+        <span class="cm"># AWS — NEVER commit these</span><br>
+        *.pem &nbsp; *.key<br><br>
+        <span class="cm"># Terraform secrets</span><br>
+        *.tfvars &nbsp; terraform.tfstate<br>
+        .terraform/
+      </div>
+      <div class="cb" style="border-color:var(--blue)">
+        <span class="cm"># VS Code + IntelliJ IDE files</span><br>
+        .vscode/ &nbsp; .idea/ &nbsp; *.iml<br><br>
+        <span class="cm"># OS generated junk</span><br>
+        .DS_Store &nbsp; Thumbs.db<br><br>
+        <span class="cm"># Logs — never commit logs</span><br>
+        *.log &nbsp; logs/ &nbsp; spring.log<br><br>
+        <span class="cm"># Docker</span><br>
+        .docker/<br><br>
+        <span style="color:var(--red)">⚠ If you commit a .pem key → go to</span><br>
+        <span style="color:var(--red)">  AWS IAM and delete it IMMEDIATELY</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf"><span>Day 2 — Git Branching & PRs · ShopEase DevOps · #CloudAutonomics · yuvraj1120</span><span class="pnum">Page 2 / 3</span></div>
+</div>
+
+
+<!-- ═══════════════════════════════════ PAGE 3 ═══════════════════════════════════ -->
+<div class="page" id="page3">
+  <div class="ph">
+    <div class="pt">🎯 Day 2 — Interview Q&A · Page 3 of 3</div>
+    <div class="pb">Phase 1: Foundations · ShopEase · #CloudAutonomics · yuvraj1120</div>
+  </div>
+
+  <!-- BEGINNER -->
+  <div class="sec">
+    <div class="st">🟢 Beginner Questions (1–2 yr level)</div>
+    <div class="g2">
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(63,185,80,0.15);color:var(--green)">1</div><span>What is a Git branch and why do we use it?</span></div>
+        <div class="qa-a">A branch is an independent line of development. Work on new features without touching main. When done + reviewed, merge it back. Without branches, developers overwrite each other.<br><span class="key">git checkout -b feature/name</span></div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(63,185,80,0.15);color:var(--green)">2</div><span>What is a Pull Request?</span></div>
+        <div class="qa-a">A PR is a proposal to merge one branch into another. It opens a review discussion, can trigger CI/CD pipelines, and merges only after approval. No professional team merges without a PR — it's a gate for code quality.</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(63,185,80,0.15);color:var(--green)">3</div><span>What does git pull do?</span></div>
+        <div class="qa-a">git pull = git fetch + git merge combined. It downloads changes from remote AND applies them to your current branch. Always pull before starting new work to avoid conflicts.<br><span class="key">git pull origin main</span></div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(63,185,80,0.15);color:var(--green)">4</div><span>Why delete branches after merging?</span></div>
+        <div class="qa-a">Stale merged branches cause confusion — devs don't know which are active vs done. Most teams auto-delete on merge. Keeps the repo clean and easy to navigate. Your shopease uses this practice.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERMEDIATE -->
+  <div class="sec">
+    <div class="st">🟡 Intermediate Questions (3–5 yr level — your target)</div>
+    <div class="g2">
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(227,179,65,0.15);color:var(--yellow)">5</div><span>Merge vs Squash vs Rebase — when to use each?</span></div>
+        <div class="qa-a"><span class="key">Merge</span> — keeps full history + merge commit. Safe for all branches.<br><span class="key">Squash</span> — combines all commits into 1 clean commit. Use for messy feature branches.<br><span class="key">Rebase</span> — linear history, no merge commit. NEVER on shared branches — rewrites hashes.</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(227,179,65,0.15);color:var(--yellow)">6</div><span>What is branch protection and why is it critical?</span></div>
+        <div class="qa-a">Branch protection prevents direct pushes to main, requires PRs, and blocks force-push. Without it one <span class="key">git push --force</span> can destroy production history. We set this up today as a GitHub Ruleset named "protect-main".</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(227,179,65,0.15);color:var(--yellow)">7</div><span>What is git stash and when do you use it?</span></div>
+        <div class="qa-a">git stash temporarily shelves uncommitted changes so your working directory is clean. Use when you're mid-feature and need to urgently fix a bug on another branch. <span class="key">git stash pop</span> restores your work exactly.</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(227,179,65,0.15);color:var(--yellow)">8</div><span>git fetch vs git pull — what's the difference?</span></div>
+        <div class="qa-a"><span class="key">git fetch</span> — downloads changes from remote but does NOT apply them. You inspect first.<br><span class="key">git pull</span> — fetch + merge in one step. Best practice: fetch first, then merge manually in critical situations.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO + TRICK -->
+  <div class="sec">
+    <div class="st">🔴 Scenario + 🎯 Trick Questions (FAANG / MNC level)</div>
+    <div class="g2">
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(248,81,73,0.15);color:var(--red)">9</div><span>You pushed AWS credentials to GitHub. What do you do RIGHT NOW?</span></div>
+        <div class="qa-a">1. AWS Console → IAM → <span class="key">delete the key immediately</span> (bots steal in minutes)<br>2. Generate new key pair<br>3. Remove file locally + add to .gitignore<br>4. <span class="key">git rm --cached file.pem</span> → commit → force push<br>5. Use BFG Repo Cleaner to scrub all history<br>6. Report to security team<br>→ Prevention: .gitignore set up on Day 2!</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(248,81,73,0.15);color:var(--red)">10</div><span>Can you recover a deleted branch?</span></div>
+        <div class="qa-a">YES — this trips most people. Run <span class="key">git reflog</span> to find the last commit hash of the deleted branch. Then: <span class="key">git checkout -b recovered-branch &lt;hash&gt;</span>. Git keeps reflog for ~30 days. Never panic — check reflog first!</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(188,140,255,0.15);color:var(--purple)">11</div><span>TRICK: What's the difference between git reset and git revert?</span></div>
+        <div class="qa-a"><span class="key">git reset</span> — moves branch pointer back, REMOVES commits from history. Dangerous on shared branches — never use on pushed commits.<br><span class="key">git revert</span> — creates a NEW commit that undoes changes. Safe on main. Always use revert on production branches.</div>
+      </div>
+      <div class="qa">
+        <div class="qa-q"><div class="qnum" style="background:rgba(188,140,255,0.15);color:var(--purple)">12</div><span>TRICK: Your branch is 3 weeks old, main moved 50 commits. What do you do?</span></div>
+        <div class="qa-a">Two options: (1) <span class="key">git merge main</span> into your branch — safe, full context preserved. (2) <span class="key">git rebase main</span> — linear history but rewrites your commits. For 3 week old branch always choose merge — safer, easier conflict resolution with full context.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TODAY'S COMMIT + RESUME TIP -->
+  <div class="sec" style="margin-bottom:0">
+    <div class="st">📌 Today's Commit + 📄 Resume Tip</div>
+    <div class="g2">
+      <div class="card">
+        <div class="card-title">📌 Today's Commit</div>
+        <div class="cb" style="border-color:var(--yellow)">
+          git add SESSION.md PROGRESS.md<br>
+          git commit -m <span class="hl">"docs(session): update progress</span><br>
+          <span class="hl"> to Day 2 — branching and PR</span><br>
+          <span class="hl"> workflow complete"</span><br>
+          git push origin main<br>
+          <span class="out">🟩 Green square #2 on GitHub!</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📄 Resume Tip — Add After Day 2</div>
+        <div class="card-desc">Add under Projects section:</div>
+        <div class="cb" style="border-color:var(--purple);font-size:0.63rem">
+          "Implemented Git branching strategy for<br>
+          shopease: enforced PR-based workflow with<br>
+          branch protection on main, preventing direct<br>
+          pushes and simulating real team code review"<br><br>
+          <span class="cm">Skills: Git 2.x | GitHub | PR Workflow</span><br>
+          <span class="cm">       Branch Protection | Conventional Commits</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf"><span>Day 2 — Git Branching & PRs · ShopEase DevOps · #CloudAutonomics · yuvraj1120</span><span class="pnum">Page 3 / 3</span></div>
+</div>
+
+<script>
+async function dl(id, filename) {
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Generating...';
+  btn.disabled = true;
+  try {
+    const el = document.getElementById(id);
+    const canvas = await html2canvas(el, { scale:2, useCORS:true, backgroundColor:'#0d1117', logging:false });
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    btn.textContent = '✅ Downloaded!';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
+  } catch(e) {
+    btn.textContent = '❌ Error — try again';
+    btn.disabled = false;
+  }
+}
+
+async function dlAll() {
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Generating all 3...';
+  btn.disabled = true;
+  const pages = [
+    {id:'page1', file:'day02-page1-concepts.png'},
+    {id:'page2', file:'day02-page2-commands.png'},
+    {id:'page3', file:'day02-page3-interview.png'}
+  ];
+  for (const p of pages) {
+    const canvas = await html2canvas(document.getElementById(p.id), { scale:2, useCORS:true, backgroundColor:'#0d1117', logging:false });
+    const a = document.createElement('a');
+    a.download = p.file;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+    await new Promise(r => setTimeout(r, 900));
+  }
+  btn.textContent = '✅ All 3 Downloaded!';
+  setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+}
+</script>
+</body>
+</html>
