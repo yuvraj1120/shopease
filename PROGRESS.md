@@ -1,10 +1,12 @@
 # 🚀 ShopEase — 60 Day DevOps Journey
 
-## Progress Tracker
+# ShopEase DevOps Journey — 60 Days
 
-| Day | Date | Tool | What I Did | Commit ✅ |
-|-----|------|------|------------|-----------|
-| 1 | 10/03/2026 | Git + GitHub | Created GitHub account, installed Git, configured SSH key, created shopease repo, built complete Spring Boot app with 3 controllers + models + services, pushed to GitHub | ✅ |
+| Day | Date | Tool | What I Did | Commit |
+|-----|------|------|------------|--------|
+| 1   | 12/03 | Git+GitHub | Created repo, pushed Spring Boot app, app running on :8080 | ✅ |
+| 2   | 12/03 | Git | Branching, PR workflow, merge strategies, .gitignore update | ✅ |
+
 
 ---
 
