@@ -7,9 +7,12 @@
 - Context: DevOps learner switching from HCL (3.6 yrs exp)
 - Goal: Production-grade DevOps in 60 days → job from July 2026
 - Machine: Windows with VS Code
+- Project Location: D:\Projects\shopease
 - AWS: Free tier only
 - GitHub username: yuvraj1120
 - Repo URL: https://github.com/yuvraj1120/shopease
+
+---
 
 ## MASTER PROMPT LOCATION
 https://github.com/yuvraj1120/shopease/blob/main/MASTER_PROMPT.md
@@ -18,54 +21,10 @@ https://github.com/yuvraj1120/shopease/blob/main/MASTER_PROMPT.md
 
 ## CURRENT PROGRESS
 - Last completed day: Day 1
-- Last completed topic: Git + GitHub
-- Last commit: feat(git): initialize shopease repo with Spring Boot base app
+- Last completed topic: Git + GitHub + Spring Boot App Running
+- Last commit: feat(spring-boot): shopease app running on port 8080
 - Current phase: Foundations (Days 1–20)
 - Next day to start: Day 2
-
----
-
-## EXACTLY WHAT WE DID TODAY (Day 1)
-
-### ✅ Completed Tasks:
-1. Created GitHub account — username: yuvraj1120
-2. Installed Git on Windows
-3. Configured Git (name, email, defaultBranch=main)
-4. Generated SSH key (ed25519) and added to GitHub
-5. Verified SSH: "Hi yuvraj1120! You've successfully authenticated"
-6. Created shopease repo on GitHub (public)
-7. Installed JDK 17 from adoptium.net
-8. Installed VS Code extensions:
-   - Extension Pack for Java
-   - Spring Boot Extension Pack
-   - Docker
-   - Kubernetes
-   - HashiCorp Terraform
-   - YAML by Red Hat
-   - GitLens
-   - Prettier
-   - Material Icon Theme
-9. Created full folder structure in VS Code
-10. Created ALL 12 source files:
-    - ShopEaseApplication.java
-    - Product.java, Cart.java, Order.java (models)
-    - ProductService.java, CartService.java, OrderService.java
-    - ProductController.java, CartController.java, OrderController.java
-    - application.properties
-    - ShopEaseApplicationTests.java
-11. Created all root files:
-    - pom.xml
-    - .gitignore
-    - README.md
-    - PROGRESS.md
-    - SESSION.md
-    - MASTER_PROMPT.md
-12. Ran git init, git add, git commit, git push
-
-### ⚠️ Pending / Not Done Yet:
-- [ ] Maven not installed yet (Day 3)
-- [ ] App not run locally yet (Day 3 — after Maven)
-- [ ] git push may still be pending if not done yet
 
 ---
 
@@ -73,16 +32,76 @@ https://github.com/yuvraj1120/shopease/blob/main/MASTER_PROMPT.md
 
 | Day | Tool | Topic | Status |
 |-----|------|-------|--------|
-| 1 | Git + GitHub | Account, Git install, SSH, JDK 17, VS Code setup, Spring Boot app created and pushed | ✅ Done |
+| 1 | Git + GitHub | GitHub account, Git install, SSH setup, JDK 17, VS Code + 9 extensions, Spring Boot app built and running on localhost:8080, all 3 products API working | ✅ Done |
+
+---
+
+## WHAT WE BUILT ON DAY 1
+
+### App is Running ✅
+- Spring Boot app running on localhost:8080
+- http://localhost:8080/products → returns 3 products JSON
+- http://localhost:8080/actuator/health → returns UP
+- http://localhost:8080/h2-console → H2 database UI
+
+### Files Created ✅
+```
+shopease/
+├── .gitignore
+├── README.md
+├── PROGRESS.md
+├── SESSION.md
+├── MASTER_PROMPT.md
+├── pom.xml
+└── src/
+    ├── main/
+    │   ├── java/com/shopease/
+    │   │   ├── ShopEaseApplication.java
+    │   │   ├── controller/
+    │   │   │   ├── CartController.java
+    │   │   │   ├── OrderController.java   ← fixed unchecked cast
+    │   │   │   └── ProductController.java
+    │   │   ├── model/
+    │   │   │   ├── Cart.java
+    │   │   │   ├── Order.java
+    │   │   │   ├── OrderRequest.java      ← new DTO class added
+    │   │   │   └── Product.java
+    │   │   └── service/
+    │   │       ├── CartService.java       ← removed unused import
+    │   │       ├── OrderService.java
+    │   │       └── ProductService.java
+    │   └── resources/
+    │       └── application.properties    ← removed H2Dialect warning
+    └── test/
+        └── java/com/shopease/
+            └── ShopEaseApplicationTests.java
+```
+
+### Issues Fixed on Day 1 ✅
+- Red errors in VS Code → fixed by mvn clean install
+- Unchecked cast in OrderController → fixed with OrderRequest DTO
+- Unused import in CartService → removed Optional import
+- H2Dialect warning in logs → removed from application.properties
+- open-in-view warning → added spring.jpa.open-in-view=false
+- Test folder red error → fixed with .vscode/settings.json
 
 ---
 
 ## WHAT'S INSTALLED ON MY MACHINE
 
-- [x] Git — version: 2.x.x (run git --version to confirm)
-- [x] Java 17 — version: 17.x.x (run java -version to confirm)
-- [x] VS Code — installed with all 9 extensions
-- [ ] Maven — NOT YET (Day 3)
+- [x] Git — version: 2.x.x
+- [x] Java 17 — version: 17.0.18
+- [x] Maven — version: 3.x.x
+- [x] VS Code — with 9 extensions installed:
+        Extension Pack for Java
+        Spring Boot Extension Pack
+        Docker
+        Kubernetes
+        HashiCorp Terraform
+        YAML by Red Hat
+        GitLens
+        Prettier
+        Material Icon Theme
 - [ ] Docker Desktop — NOT YET (Day 11)
 - [ ] minikube — NOT YET (Day 41)
 - [ ] kubectl — NOT YET (Day 41)
@@ -99,59 +118,17 @@ None — AWS starts Day 21
 
 ---
 
-## REPO STRUCTURE CREATED SO FAR
-```
-shopease/
-├── .gitignore
-├── README.md
-├── PROGRESS.md
-├── SESSION.md
-├── MASTER_PROMPT.md
-├── pom.xml
-└── src/
-    ├── main/
-    │   ├── java/com/shopease/
-    │   │   ├── ShopEaseApplication.java
-    │   │   ├── controller/
-    │   │   │   ├── CartController.java
-    │   │   │   ├── OrderController.java
-    │   │   │   └── ProductController.java
-    │   │   ├── model/
-    │   │   │   ├── Cart.java
-    │   │   │   ├── Order.java
-    │   │   │   └── Product.java
-    │   │   └── service/
-    │   │       ├── CartService.java
-    │   │       ├── OrderService.java
-    │   │       └── ProductService.java
-    │   └── resources/
-    │       └── application.properties
-    └── test/
-        └── java/com/shopease/
-            └── ShopEaseApplicationTests.java
-```
-
----
-
 ## BLOCKERS / ISSUES
-- Java extension in VS Code asked to install JDK → RESOLVED 
-  (installed JDK 17 from adoptium.net)
-- SSH first-time fingerprint warning → RESOLVED 
-  (typed yes, now permanently saved)
+None — everything working perfectly
 
 ---
 
 ## NEXT SESSION INSTRUCTIONS
-When you open a new Claude chat, say exactly this:
+When you open a new Claude chat, say exactly:
 
 "Hi Claude. I am continuing my 60-day DevOps learning journey.
-Here is my session file: [PASTE THIS ENTIRE FILE]
+Here is my session file: [PASTE THIS FILE]
 And here is my master prompt: [PASTE MASTER_PROMPT.md]
 Please start Day 2."
 
 ## NEXT: Day 2 — Git Branching, Pull Requests, Merge Strategy
-```
-
----
-
-
