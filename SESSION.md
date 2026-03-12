@@ -20,11 +20,11 @@ https://github.com/yuvraj1120/shopease/blob/main/MASTER_PROMPT.md
 ---
 
 ## CURRENT PROGRESS
-- Last completed day: Day 1
-- Last completed topic: Git + GitHub + Spring Boot App Running
-- Last commit: feat(spring-boot): shopease app running on port 8080
+- Last completed day: Day 2
+- Last completed topic: Git — Branching, PR Workflow, .gitignore, Branch Protection Rules
+- Last commit: docs(session): update progress to Day 2 — branching and PR workflow complete
 - Current phase: Foundations (Days 1–20)
-- Next day to start: Day 2
+- Next day to start: Day 3
 
 ---
 
@@ -33,6 +33,7 @@ https://github.com/yuvraj1120/shopease/blob/main/MASTER_PROMPT.md
 | Day | Tool | Topic | Status |
 |-----|------|-------|--------|
 | 1 | Git + GitHub | GitHub account, Git install, SSH setup, JDK 17, VS Code + 9 extensions, Spring Boot app built and running on localhost:8080, all 3 products API working | ✅ Done |
+| 2 | Git | Feature branch, PR workflow, .gitignore update, branch protection rules on main, merge strategies | ✅ Done |
 
 ---
 
@@ -45,7 +46,6 @@ https://github.com/yuvraj1120/shopease/blob/main/MASTER_PROMPT.md
 - http://localhost:8080/h2-console → H2 database UI
 
 ### Files Created ✅
-```
 shopease/
 ├── .gitignore
 ├── README.md
@@ -59,23 +59,22 @@ shopease/
     │   │   ├── ShopEaseApplication.java
     │   │   ├── controller/
     │   │   │   ├── CartController.java
-    │   │   │   ├── OrderController.java   ← fixed unchecked cast
+    │   │   │   ├── OrderController.java
     │   │   │   └── ProductController.java
     │   │   ├── model/
     │   │   │   ├── Cart.java
     │   │   │   ├── Order.java
-    │   │   │   ├── OrderRequest.java      ← new DTO class added
+    │   │   │   ├── OrderRequest.java
     │   │   │   └── Product.java
     │   │   └── service/
-    │   │       ├── CartService.java       ← removed unused import
+    │   │       ├── CartService.java
     │   │       ├── OrderService.java
     │   │       └── ProductService.java
     │   └── resources/
-    │       └── application.properties    ← removed H2Dialect warning
+    │       └── application.properties
     └── test/
         └── java/com/shopease/
             └── ShopEaseApplicationTests.java
-```
 
 ### Issues Fixed on Day 1 ✅
 - Red errors in VS Code → fixed by mvn clean install
@@ -84,6 +83,32 @@ shopease/
 - H2Dialect warning in logs → removed from application.properties
 - open-in-view warning → added spring.jpa.open-in-view=false
 - Test folder red error → fixed with .vscode/settings.json
+
+---
+
+## WHAT WE DID ON DAY 2 ✅
+
+- Created feature branch: feature/day2-gitignore-update
+- Updated .gitignore with professional rules:
+  → Java/Maven build output (target/, *.class, *.jar)
+  → Spring Boot secrets (application-prod.properties, .env)
+  → VS Code and IntelliJ settings
+  → OS files (.DS_Store, Thumbs.db)
+  → Logs (*.log, logs/)
+  → AWS and Terraform secrets (*.pem, *.tfvars, terraform.tfstate, .terraform/)
+  → Docker (.docker/)
+- Updated PROGRESS.md with Day 2 row
+- Opened PR on GitHub with proper description
+- Added code review comment on *.pem line
+- Merged PR → purple Merged badge confirmed
+- Deleted feature branch (remote on GitHub + local)
+- Pulled merged changes to local main
+- Set up Branch Protection Rules on main:
+  → Ruleset name: protect-main
+  → Status: Active
+  → Bypass: Repository admin
+  → Target: main branch
+  → Rules enabled: Restrict deletions, Require PR before merging, Block force pushes
 
 ---
 
@@ -119,7 +144,8 @@ None — AWS starts Day 21
 ---
 
 ## BLOCKERS / ISSUES
-None — everything working perfectly
+- Day 2: PR merge button was stuck loading → resolved by waiting and clicking Confirm Merge
+- Everything else working perfectly
 
 ---
 
@@ -129,6 +155,17 @@ When you open a new Claude chat, say exactly:
 "Hi Claude. I am continuing my 60-day DevOps learning journey.
 Here is my session file: [PASTE THIS FILE]
 And here is my master prompt: [PASTE MASTER_PROMPT.md]
-Please start Day 2."
+Please start Day 3."
 
-## NEXT: Day 2 — Git Branching, Pull Requests, Merge Strategy
+---
+
+## NEXT: Day 3 — Maven: Build Lifecycle, Running Tests, Generating JAR
+```
+
+---
+
+Copy everything between the triple backticks, paste it into your `SESSION.md` file in VS Code, save with Ctrl+S, then run:
+```
+git add SESSION.md
+git commit -m "docs(session): update progress to Day 2 — branching and PR workflow complete"
+git push origin main
