@@ -1,50 +1,71 @@
-# ─────────────────────────────────────────
-# JAVA / MAVEN — Never commit compiled code
-# ─────────────────────────────────────────
+# ===========================
+# Java / Maven build output
+# ===========================
 target/
+*.class
 *.jar
 *.war
-*.class
 *.ear
+*.nar
+hs_err_pid*
 
-# ─────────────────────────────────────────
-# VS CODE — Personal editor settings
-# ─────────────────────────────────────────
-.vscode/settings.json
-.vscode/launch.json
+# ===========================
+# Spring Boot secrets
+# ===========================
+application-prod.properties
+application-secrets.properties
+application-local.properties
+*.env
+.env
 
-# ─────────────────────────────────────────
-# INTELLIJ / ECLIPSE — Other IDE files
-# ─────────────────────────────────────────
+# ===========================
+# VS Code
+# ===========================
+.vscode/
+*.code-workspace
+
+# ===========================
+# IntelliJ IDEA
+# ===========================
 .idea/
 *.iml
-*.project
-*.classpath
-.eclipse/
+*.iws
+*.ipr
+out/
 
-# ─────────────────────────────────────────
-# SECRETS — NEVER commit these ever
-# ─────────────────────────────────────────
-.env
-*.pem
-*.key
-*.pfx
-application-prod.properties
-application-local.properties
-secrets.properties
-
-# ─────────────────────────────────────────
-# TERRAFORM — Added in Phase 2 (Day 21)
-# ─────────────────────────────────────────
-*.tfstate
-*.tfstate.backup
-.terraform/
-*.tfvars
-override.tf
-
-# ─────────────────────────────────────────
-# OS FILES — Auto-generated junk files
-# ─────────────────────────────────────────
+# ===========================
+# OS generated files
+# ===========================
 .DS_Store
 Thumbs.db
 desktop.ini
+$RECYCLE.BIN/
+
+# ===========================
+# Logs
+# ===========================
+*.log
+logs/
+spring.log
+
+# ===========================
+# AWS & Terraform (NEVER commit these)
+# ===========================
+*.pem
+*.key
+*.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# ===========================
+# Docker
+# ===========================
+.docker/
+
+# ===========================
+# Node (if ever added)
+# ===========================
+node_modules/
+npm-debug.log
