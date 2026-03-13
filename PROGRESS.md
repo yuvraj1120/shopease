@@ -6,6 +6,7 @@
 |-----|------|------|------------|--------|
 | 1   | 12/03 | Git+GitHub | Created repo, pushed Spring Boot app, app running on :8080 | ✅ |
 | 2   | 12/03 | Git | Branching, PR workflow, merge strategies, .gitignore update | ✅ |
+| 3   | 13/03 | Maven | mvn lifecycle, tests, jar build, ran jar directly | ✅ |
 
 
 ---

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Day 03 — Maven Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0d1117; color: #e6edf3; font-family: 'Syne', sans-serif; }
+  .controls {
+    position: sticky; top: 0; z-index: 100;
+    background: #161b22; border-bottom: 1px solid #30363d;
+    padding: 14px 38px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .controls span { color: #8b949e; font-size: 13px; margin-right: 6px; }
+  .btn {
+    padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    transition: opacity .2s;
+  }
+  .btn:hover { opacity: .85; }
+  .btn-green  { background: #3fb950; color: #0d1117; }
+  .btn-blue   { background: #58a6ff; color: #0d1117; }
+  .btn-purple { background: #bc8cff; color: #0d1117; }
+  .btn-orange { background: #ffa657; color: #0d1117; }
+  .page { width: 1200px; margin: 0 auto 48px; padding: 38px; background: #0d1117; }
+  /* Header */
+  .page-header {
+    background: linear-gradient(90deg, #3fb950, #58a6ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: 22px; font-weight: 700; margin-bottom: 6px;
+  }
+  .page-badge {
+    display: inline-block; background: #1c2128; border: 1px solid #30363d;
+    color: #8b949e; font-size: 12px; padding: 3px 12px; border-radius: 20px; margin-bottom: 28px;
+  }
+  /* Footer */
+  .page-footer {
+    margin-top: 32px; padding-top: 14px; border-top: 1px solid #30363d;
+    display: flex; justify-content: space-between; color: #8b949e; font-size: 12px;
+  }
+  /* Cards */
+  .card {
+    background: #161b22; border: 1px solid #30363d;
+    border-radius: 10px; padding: 20px 24px; margin-bottom: 18px;
+  }
+  .card-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; color: #58a6ff; }
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  /* Concept cards */
+  .concept-card {
+    background: #1c2128; border-left: 4px solid #3fb950;
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .concept-name { font-size: 14px; font-weight: 700; color: #3fb950; margin-bottom: 6px; }
+  .concept-body { font-size: 13px; color: #8b949e; line-height: 1.7; }
+  .concept-body b { color: #e6edf3; }
+  /* Pipeline diagram */
+  .pipeline { display: flex; align-items: center; gap: 0; margin: 16px 0; overflow-x: auto; }
+  .phase-box {
+    padding: 10px 14px; border-radius: 8px; text-align: center;
+    font-size: 12px; font-weight: 700; white-space: nowrap; min-width: 90px;
+  }
+  .phase-arrow { color: #3fb950; font-size: 18px; padding: 0 4px; flex-shrink: 0; }
+  .p-gray   { background: #2d333b; color: #8b949e; border: 1px solid #30363d; }
+  .p-blue   { background: #0d2136; color: #58a6ff; border: 1px solid #1b4571; }
+  .p-teal   { background: #0d2018; color: #3fb950; border: 1px solid #1a4030; }
+  .p-amber  { background: #231a0d; color: #ffa657; border: 1px solid #52330d; }
+  .p-purple { background: #1e1236; color: #bc8cff; border: 1px solid #42207a; }
+  .p-coral  { background: #231218; color: #f85149; border: 1px solid #5a1c22; }
+  .phase-sub { font-size: 10px; font-weight: 400; margin-top: 3px; opacity: .8; }
+  /* Code blocks */
+  pre {
+    background: #1c2128; border: 1px solid #30363d;
+    border-radius: 8px; padding: 14px 16px; overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.6;
+  }
+  .kw  { color: #ff7b72; }
+  .cm  { color: #8b949e; font-style: italic; }
+  .str { color: #a5d6ff; }
+  .cmd { color: #3fb950; }
+  .out { color: #e3b341; }
+  /* Command table */
+  .cmd-table { width: 100%; border-collapse: collapse; }
+  .cmd-table td { padding: 7px 10px; font-size: 12px; border-bottom: 1px solid #21262d; vertical-align: top; }
+  .cmd-table td:first-child { font-family: 'JetBrains Mono', monospace; color: #3fb950; white-space: nowrap; min-width: 280px; }
+  .cmd-table td:last-child { color: #8b949e; }
+  /* Best practices table */
+  .bp-table { width: 100%; border-collapse: collapse; }
+  .bp-table th { padding: 8px 12px; font-size: 12px; font-weight: 700; text-align: left; border-bottom: 2px solid #30363d; }
+  .bp-table td { padding: 7px 12px; font-size: 12px; border-bottom: 1px solid #21262d; }
+  .bp-table .do { color: #3fb950; }
+  .bp-table .dont { color: #f85149; }
+  /* Interview badges */
+  .q-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 10px; border-radius: 20px; margin-bottom: 6px;
+  }
+  .bg-green   { background: #0f3a1c; color: #3fb950; }
+  .bg-yellow  { background: #3a2a00; color: #e3b341; }
+  .bg-red     { background: #3a0d0d; color: #f85149; }
+  .bg-purple  { background: #1e1236; color: #bc8cff; }
+  .q-block    { background: #1c2128; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+  .q-text     { font-size: 13px; color: #e6edf3; font-weight: 700; margin-bottom: 6px; }
+  .a-text     { font-size: 12px; color: #8b949e; line-height: 1.7; }
+  /* Commit box */
+  .commit-box {
+    background: #0f3a1c; border: 1px solid #3fb950;
+    border-radius: 10px; padding: 18px 22px;
+  }
+  .commit-title { color: #3fb950; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  /* Resume box */
+  .resume-box {
+    background: #0d2136; border: 1px solid #58a6ff;
+    border-radius: 10px; padding: 18px 22px; margin-top: 14px;
+  }
+  .resume-title { color: #58a6ff; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .resume-text { font-size: 12px; color: #8b949e; line-height: 1.7; }
+  /* Divider label */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: #8b949e; margin: 20px 0 10px;
+    border-bottom: 1px solid #30363d; padding-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<!-- DOWNLOAD BUTTONS -->
+<div class="controls">
+  <span>Day 03 — Maven</span>
+  <button class="btn btn-green"  onclick="dl('page1','day03-page1-concepts.png')">⬇ Page 1 — Concepts + Diagram</button>
+  <button class="btn btn-blue"   onclick="dl('page2','day03-page2-commands.png')">⬇ Page 2 — Commands + Steps</button>
+  <button class="btn btn-purple" onclick="dl('page3','day03-page3-interview.png')">⬇ Page 3 — Interview Q&A</button>
+  <button class="btn btn-orange" onclick="dlAll()">⬇ Download All 3 Pages</button>
+</div>
+
+<!-- ══════════ PAGE 1 ══════════ -->
+<div class="page" id="page1">
+  <div class="page-header">Day 03 — Maven: Build Lifecycle &amp; JAR Packaging · Page 1 of 3</div>
+  <div class="page-badge">Maven · Phase 1: Foundations · yuvraj1120</div>
+
+  <!-- PIPELINE DIAGRAM -->
+  <div class="card">
+    <div class="card-title">Maven default lifecycle — phases run in order</div>
+    <div class="pipeline">
+      <div class="phase-box p-gray">validate<div class="phase-sub">pom.xml check</div></div>
+      <div class="phase-arrow">›</div>
+      <div class="phase-box p-blue">compile<div class="phase-sub">.java → .class</div></div>
+      <div class="phase-arrow">›</div>
+      <div class="phase-box p-teal">test<div class="phase-sub">JUnit tests</div></div>
+      <div class="phase-arrow">›</div>
+      <div class="phase-box p-amber">package<div class="phase-sub">creates .jar</div></div>
+      <div class="phase-arrow">›</div>
+      <div class="phase-box p-purple">verify<div class="phase-sub">integration</div></div>
+      <div class="phase-arrow">›</div>
+      <div class="phase-box p-coral">install<div class="phase-sub">→ local .m2</div></div>
+    </div>
+    <p style="font-size:12px;color:#8b949e;margin-top:10px;">
+      Running <code style="background:#1c2128;padding:2px 6px;border-radius:4px;color:#3fb950;">mvn package</code>
+      automatically runs: validate → compile → test → package. Every phase includes all previous phases.
+    </p>
+  </div>
+
+  <!-- HOW MAVEN RESOLVES DEPS -->
+  <div class="card">
+    <div class="card-title">Dependency resolution flow</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div style="background:#1c2128;border-radius:8px;padding:12px 18px;text-align:center;">
+        <div style="font-size:12px;font-weight:700;color:#58a6ff;">pom.xml</div>
+        <div style="font-size:11px;color:#8b949e;margin-top:3px;">declares deps</div>
+      </div>
+      <div style="color:#3fb950;font-size:20px;">→</div>
+      <div style="background:#1c2128;border-radius:8px;padding:12px 18px;text-align:center;">
+        <div style="font-size:12px;font-weight:700;color:#3fb950;">local .m2 cache</div>
+        <div style="font-size:11px;color:#8b949e;margin-top:3px;">check first</div>
+      </div>
+      <div style="color:#3fb950;font-size:20px;">→</div>
+      <div style="background:#1c2128;border-radius:8px;padding:12px 18px;text-align:center;">
+        <div style="font-size:12px;font-weight:700;color:#ffa657;">Maven Central</div>
+        <div style="font-size:11px;color:#8b949e;margin-top:3px;">download if missing</div>
+      </div>
+      <div style="color:#3fb950;font-size:20px;">→</div>
+      <div style="background:#1c2128;border-radius:8px;padding:12px 18px;text-align:center;">
+        <div style="font-size:12px;font-weight:700;color:#bc8cff;">target/shopease.jar</div>
+        <div style="font-size:11px;color:#8b949e;margin-top:3px;">final output</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 KEY CONCEPTS -->
+  <div class="section-label">4 Key Concepts</div>
+  <div class="grid-2">
+    <div class="concept-card">
+      <div class="concept-name">pom.xml</div>
+      <div class="concept-body">
+        <b>What:</b> Project Object Model — XML config declaring name, version, Java level, dependencies, plugins.<br>
+        <b>Analogy:</b> Recipe card listing ingredients + cooking method.<br>
+        <b>Why:</b> Maven reads it to know what to download and how to build.
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">Build lifecycle</div>
+      <div class="concept-body">
+        <b>What:</b> Fixed sequence of phases. Running any phase auto-runs all previous ones.<br>
+        <b>Analogy:</b> Car assembly line — engine install requires chassis first.<br>
+        <b>Why:</b> Guarantees repeatable, nothing-skipped builds.
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">Local .m2 repository</div>
+      <div class="concept-body">
+        <b>What:</b> <code style="color:#3fb950;">C:\Users\name\.m2\repository</code> — cached downloaded jars.<br>
+        <b>Analogy:</b> Personal pantry stocked once from the store.<br>
+        <b>Why:</b> Spring Boot pulls 40MB+ of deps; downloads once, reuses forever.
+      </div>
+    </div>
+    <div class="concept-card">
+      <div class="concept-name">target/ folder</div>
+      <div class="concept-body">
+        <b>What:</b> Maven's output directory — compiled .class files, test reports, final .jar.<br>
+        <b>Analogy:</b> Kitchen counter where finished dishes come out.<br>
+        <b>Why:</b> The .jar here is what gets dockerised and deployed to EC2.
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKFLOW -->
+  <div class="section-label">How Maven fits in the DevOps pipeline</div>
+  <div class="card" style="padding:16px 20px;">
+    <div style="font-size:12px;color:#8b949e;line-height:2;">
+      <span style="color:#3fb950;font-weight:700;">GitHub push</span>
+      <span style="color:#30363d;"> ──► </span>
+      <span style="color:#58a6ff;font-weight:700;">Jenkins picks up</span>
+      <span style="color:#30363d;"> ──► </span>
+      <span style="color:#ffa657;font-weight:700;">mvn clean package</span>
+      <span style="color:#30363d;"> ──► </span>
+      <span style="color:#bc8cff;font-weight:700;">shopease.jar</span>
+      <span style="color:#30363d;"> ──► </span>
+      <span style="color:#f85149;font-weight:700;">Docker build</span>
+      <span style="color:#30363d;"> ──► </span>
+      <span style="color:#3fb950;font-weight:700;">Deploy to K8s</span>
+    </div>
+    <p style="font-size:12px;color:#8b949e;margin-top:10px;">
+      Maven's job ends when the JAR is produced. Docker picks it up from there. You'll wire this together in Jenkins on Day 10.
+    </p>
+  </div>
+
+  <div class="page-footer">
+    <span>Day 03 — Maven · ShopEase DevOps · #CloudAutonomics · yuvraj1120</span>
+    <span>Page 1 / 3</span>
+  </div>
+</div>
+
+
+<!-- ══════════ PAGE 2 ══════════ -->
+<div class="page" id="page2">
+  <div class="page-header">Day 03 — Maven: Build Lifecycle &amp; JAR Packaging · Page 2 of 3</div>
+  <div class="page-badge">Maven · Phase 1: Foundations · yuvraj1120</div>
+
+  <div class="section-label">All Commands Learned Today</div>
+  <div class="card" style="padding:16px 20px;">
+    <table class="cmd-table">
+      <tr><td>mvn --version</td><td>Check Maven &amp; Java version</td></tr>
+      <tr><td>mvn clean</td><td>Delete target/ folder (fresh start)</td></tr>
+      <tr><td>mvn compile</td><td>Compile .java → .class files</td></tr>
+      <tr><td>mvn test</td><td>Compile + run all JUnit tests</td></tr>
+      <tr><td>mvn package</td><td>Compile + test + create .jar in target/</td></tr>
+      <tr><td>mvn clean package</td><td>Most common CI command — clean then build</td></tr>
+      <tr><td>mvn install</td><td>Package + copy .jar to local .m2 repo</td></tr>
+      <tr><td>mvn clean package -DskipTests</td><td>Build jar WITHOUT running tests</td></tr>
+      <tr><td>mvn test -Dtest=ShopEaseApplicationTests</td><td>Run only one specific test class</td></tr>
+      <tr><td>mvn dependency:tree</td><td>Show full dependency tree (all transitive deps)</td></tr>
+      <tr><td>mvn dependency:resolve</td><td>Download all dependencies without building</td></tr>
+      <tr><td>mvn help:effective-pom</td><td>Show the full pom with all defaults filled in</td></tr>
+      <tr><td>java -jar target/shopease-0.0.1-SNAPSHOT.jar</td><td>Run the built JAR directly</td></tr>
+    </table>
+  </div>
+
+  <div class="section-label">Hands-on steps recap</div>
+  <div class="grid-2">
+    <div class="card" style="padding:16px 20px;">
+      <div class="card-title" style="color:#3fb950;font-size:13px;">Step-by-step build flow</div>
+      <pre><span class="cm"># 1. Navigate to project</span>
+<span class="cmd">cd D:\Projects\shopease</span>
+
+<span class="cm"># 2. Wipe old build</span>
+<span class="cmd">mvn clean</span>
+<span class="out">→ [INFO] BUILD SUCCESS</span>
+
+<span class="cm"># 3. Compile source code</span>
+<span class="cmd">mvn compile</span>
+<span class="out">→ Compiling 9 source files</span>
+<span class="out">→ [INFO] BUILD SUCCESS</span>
+
+<span class="cm"># 4. Run tests</span>
+<span class="cmd">mvn test</span>
+<span class="out">→ Tests run: 3, Failures: 0</span>
+
+<span class="cm"># 5. Package into JAR</span>
+<span class="cmd">mvn clean package</span>
+<span class="out">→ Building jar: target/shopease-0.0.1-SNAPSHOT.jar</span>
+<span class="out">→ [INFO] BUILD SUCCESS</span>
+
+<span class="cm"># 6. Run the JAR</span>
+<span class="cmd">java -jar target\shopease-0.0.1-SNAPSHOT.jar</span>
+<span class="out">→ Started ShopEaseApplication in 3.4s</span></pre>
+    </div>
+    <div class="card" style="padding:16px 20px;">
+      <div class="card-title" style="color:#58a6ff;font-size:13px;">JUnit test file added today</div>
+      <pre><span class="kw">@SpringBootTest</span>
+<span class="kw">class</span> ShopEaseApplicationTests {
+
+  <span class="kw">@Autowired</span>
+  <span class="kw">private</span> ProductService productService;
+
+  <span class="kw">@Test</span>
+  <span class="kw">void</span> contextLoads() {
+    <span class="cm">// Verifies Spring context starts OK</span>
+  }
+
+  <span class="kw">@Test</span>
+  <span class="kw">void</span> testGetAllProductsReturnsNonEmptyList() {
+    List&lt;Product&gt; products =
+      productService.getAllProducts();
+    assertNotNull(products);
+    assertFalse(products.isEmpty());
+  }
+
+  <span class="kw">@Test</span>
+  <span class="kw">void</span> testProductHasName() {
+    Product first =
+      productService.getAllProducts().get(0);
+    assertNotNull(first.getName());
+  }
+}</pre>
+    </div>
+  </div>
+
+  <div class="section-label">Best practices vs mistakes</div>
+  <div class="card" style="padding:14px 20px;">
+    <table class="bp-table">
+      <tr>
+        <th style="color:#3fb950;width:50%;">✅ Do This</th>
+        <th style="color:#f85149;width:50%;">❌ Never Do This</th>
+      </tr>
+      <tr>
+        <td class="do">Use <code>mvn clean package</code> in all CI pipelines</td>
+        <td class="dont">Run <code>mvn package</code> without <code>clean</code> — stale classes cause phantom bugs</td>
+      </tr>
+      <tr>
+        <td class="do">Add <code>-DskipTests</code> only temporarily during debugging</td>
+        <td class="dont">Skip tests permanently — they catch bugs before production</td>
+      </tr>
+      <tr>
+        <td class="do">Commit <code>pom.xml</code> with every new dependency added</td>
+        <td class="dont">Commit the <code>target/</code> folder — it's 40MB+ of compiled junk</td>
+      </tr>
+      <tr>
+        <td class="do">Run <code>mvn dependency:tree</code> when debugging classpath issues</td>
+        <td class="dont">Add dependencies blindly without checking transitive conflicts</td>
+      </tr>
+      <tr>
+        <td class="do">Use fixed versions in pom.xml for production (<code>1.0.0</code>)</td>
+        <td class="dont">Ship <code>-SNAPSHOT</code> versions to production — they are mutable</td>
+      </tr>
+      <tr>
+        <td class="do">Check <code>target/surefire-reports/</code> for detailed test failure info</td>
+        <td class="dont">Ignore test failures thinking they're flaky — investigate every one</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="page-footer">
+    <span>Day 03 — Maven · ShopEase DevOps · #CloudAutonomics · yuvraj1120</span>
+    <span>Page 2 / 3</span>
+  </div>
+</div>
+
+
+<!-- ══════════ PAGE 3 ══════════ -->
+<div class="page" id="page3">
+  <div class="page-header">Day 03 — Maven: Build Lifecycle &amp; JAR Packaging · Page 3 of 3</div>
+  <div class="page-badge">Maven · Phase 1: Foundations · yuvraj1120</div>
+
+  <div class="section-label">🟢 Beginner Questions</div>
+  <div class="grid-2">
+    <div class="q-block">
+      <div class="q-badge bg-green">BEGINNER</div>
+      <div class="q-text">Q: What is Maven?</div>
+      <div class="a-text">A: Build automation tool for Java. It manages dependencies, compiles code, runs tests, and packages to a .jar. Configured via pom.xml.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-green">BEGINNER</div>
+      <div class="q-text">Q: What is pom.xml?</div>
+      <div class="a-text">A: Project Object Model — declares project name, version, Java level, dependencies, and plugins. Maven reads it to know what to download and how to build.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-green">BEGINNER</div>
+      <div class="q-text">Q: What command creates a JAR?</div>
+      <div class="a-text">A: <code style="color:#3fb950;">mvn clean package</code>. Clean deletes old artifacts; package compiles, tests, and creates the .jar in target/.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-green">BEGINNER</div>
+      <div class="q-text">Q: What is the target/ folder?</div>
+      <div class="a-text">A: Maven's output folder — .class files, test reports, and final .jar. Never commit to Git. Always in .gitignore.</div>
+    </div>
+  </div>
+
+  <div class="section-label">🟡 Intermediate Questions</div>
+  <div class="grid-2">
+    <div class="q-block">
+      <div class="q-badge bg-yellow">INTERMEDIATE</div>
+      <div class="q-text">Q: Difference between mvn package and mvn install?</div>
+      <div class="a-text">A: package creates the JAR in target/. install does that AND copies it into the local .m2 repository so other local projects can depend on it.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-yellow">INTERMEDIATE</div>
+      <div class="q-text">Q: What is a SNAPSHOT version?</div>
+      <div class="a-text">A: A version ending in -SNAPSHOT (e.g., 1.0.0-SNAPSHOT) is still in development and can change. Maven re-checks for updates. Remove it for stable releases.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-yellow">INTERMEDIATE</div>
+      <div class="q-text">Q: What does -DskipTests do and when is it OK?</div>
+      <div class="a-text">A: Skips test execution. Acceptable only temporarily during development iteration. NEVER use in CI/CD pipelines — tests are the safety net.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-yellow">INTERMEDIATE</div>
+      <div class="q-text">Q: How does transitive dependency resolution work?</div>
+      <div class="a-text">A: If your pom.xml depends on Library A, and A depends on B, Maven downloads B automatically. Use mvn dependency:tree to see the full chain.</div>
+    </div>
+  </div>
+
+  <div class="section-label">🔴 Scenario &amp; 🎯 Trick Questions</div>
+  <div class="grid-2">
+    <div class="q-block">
+      <div class="q-badge bg-red">SCENARIO</div>
+      <div class="q-text">mvn test fails with OutOfMemoryError on CI server (512MB RAM). Fix?</div>
+      <div class="a-text">A: Set MAVEN_OPTS in Jenkinsfile: <code style="color:#f85149;">environment { MAVEN_OPTS = '-Xmx512m -Xms256m' }</code>. Or set globally on Jenkins server as env var.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-red">SCENARIO</div>
+      <div class="q-text">Code compiles on dev machine but fails in Jenkins. Maven cause?</div>
+      <div class="a-text">A: Missing dep in pom.xml but exists in dev's .m2 cache. Jenkins clean env reveals it. Fix: run mvn dependency:resolve first, use mvn clean package.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-purple">TRICK</div>
+      <div class="q-text">Does mvn package also run tests?</div>
+      <div class="a-text">A: YES — this trips everyone. package runs validate+compile+test+package in order. To skip tests you must explicitly add -DskipTests.</div>
+    </div>
+    <div class="q-block">
+      <div class="q-badge bg-purple">TRICK</div>
+      <div class="q-text">What's the difference between &lt;dependency&gt; and &lt;plugin&gt;?</div>
+      <div class="a-text">A: dependency is a library bundled into your JAR (Spring Boot, H2). plugin is a build tool (Surefire, SonarQube scanner) — only used at build time, never in your JAR.</div>
+    </div>
+  </div>
+
+  <!-- COMMIT + RESUME -->
+  <div class="grid-2" style="margin-top:20px;">
+    <div class="commit-box">
+      <div class="commit-title">📌 Today's Commit</div>
+      <pre style="background:#0a2612;border:none;padding:0;font-size:12px;"><span class="cm"># Files changed:</span>
+<span class="cmd">src/test/java/com/shopease/ShopEaseApplicationTests.java</span>
+<span class="cmd">PROGRESS.md</span>
+
+<span class="cm"># Commands:</span>
+<span class="cmd">git add src/test/java/com/shopease/ShopEaseApplicationTests.java</span>
+<span class="cmd">git add PROGRESS.md</span>
+<span class="cmd">git commit -m "test(maven): add JUnit tests and verify mvn clean package lifecycle"</span>
+<span class="cmd">git push origin main</span>
+
+<span class="out">✅ Green square confirmed at github.com/yuvraj1120</span></pre>
+    </div>
+    <div class="resume-box">
+      <div class="resume-title">📄 Resume Tip — After Maven</div>
+      <div class="resume-text">
+        <b style="color:#e6edf3;">Projects section bullet:</b><br>
+        "Configured Maven build pipeline for shopease Spring Boot app: automated compile, unit test, and JAR packaging via mvn clean package; integrated JUnit 5 tests with Surefire plugin for CI-ready test reporting"<br><br>
+        <b style="color:#e6edf3;">Skills section:</b> Add "Apache Maven — 3.9.x"
+      </div>
+    </div>
+  </div>
+
+  <!-- TOMORROW PREVIEW -->
+  <div style="background:#1c2128;border:1px solid #30363d;border-radius:8px;padding:14px 20px;margin-top:18px;">
+    <span style="color:#ffa657;font-weight:700;font-size:13px;">⏭ Tomorrow → Day 4: Maven Advanced</span>
+    <span style="color:#8b949e;font-size:13px;margin-left:12px;">Multi-profile builds, SonarQube plugin in pom.xml, sonar-project.properties, running Maven with profiles</span>
+  </div>
+
+  <div class="page-footer">
+    <span>Day 03 — Maven · ShopEase DevOps · #CloudAutonomics · yuvraj1120</span>
+    <span>Page 3 / 3</span>
+  </div>
+</div>
+
+<script>
+function dl(pageId, filename) {
+  const el = document.getElementById(pageId);
+  html2canvas(el, { scale: 2, backgroundColor: '#0d1117', useCORS: true, logging: false }).then(canvas => {
+    const a = document.createElement('a');
+    a.download = filename;
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
+}
+async function dlAll() {
+  await dl('page1','day03-page1-concepts.png');
+  await new Promise(r => setTimeout(r, 800));
+  await dl('page2','day03-page2-commands.png');
+  await new Promise(r => setTimeout(r, 800));
+  await dl('page3','day03-page3-interview.png');
+}
+</script>
+</body>
+</html>
