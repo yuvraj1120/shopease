@@ -34,4 +34,4 @@
 → Add ONE new row to the table:
    | 2 | 11/03/2026 | Git | Branching, PRs, merge strategy | ✅ |
 → Save → commit → push
-→ That's it — takes 2 minutes
+→ That's it — takes 2 minutes . 
